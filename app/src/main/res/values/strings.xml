@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Ойся</string>
+    <string name="title_activity_chat">ChatActivity</string>
+    <string name="login_title">Авторизация</string>
+    <string name="username">Имя пользователя</string>
+    <string name="password">Пароль</string>
+    <string name="login_enter">Войти</string>
+    <string name="create_account">Создать аккаунт</string>
+
+    <string name="enter_message">Введите сообщение</string>
+    <string name="settings">Настройки</string>
+
+    <string name="color_theme">Цвет темы</string>
+    <string name="color_theme_description">Изменить цвет темы на светлую или темную</string>
+    <string name="size_font">Размер шрифта</string>
+    <string name="size_font_description">Изменить размер шрифта</string>
+    <string name="history">История сообщений</string>
+    <string name="save_history">Сохранить историю сообщений на сервер</string>
+    <string name="download_history">Восстановить историю сообщений с сервера</string>
+    <string name="clear_history">Очистить историю сообщений</string>
+</resources>
