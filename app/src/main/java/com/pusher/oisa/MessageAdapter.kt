@@ -10,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import kotlinx.android.synthetic.main.my_message.view.*
 import kotlinx.android.synthetic.main.other_message.view.*
-import org.w3c.dom.Text
 
 
 private const val VIEW_TYPE_MY_MESSAGE = 1
