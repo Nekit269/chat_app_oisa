@@ -9,10 +9,10 @@ import kotlinx.android.synthetic.main.activity_chat.*
 import java.util.*
 
 
-class DatabaseHandler(context: Context, tableName: String) :
+class DatabaseHandler(context: Context) :
         SQLiteOpenHelper(context, DB_NAME, null, DB_VERSION) {
 
-    private val TABLE_NAME = tableName
+    lateinit var TABLE_NAME: String
 
     override fun onCreate(db: SQLiteDatabase?) {
 
@@ -24,6 +24,7 @@ class DatabaseHandler(context: Context, tableName: String) :
 
     fun setUser() {
         val db = this.writableDatabase
+        TABLE_NAME = App.user
         val CREATE_TABLE = "CREATE TABLE IF NOT EXISTS $TABLE_NAME " +
                 "($ID Integer PRIMARY KEY, $USER TEXT, $MESSAGE TEXT, $TIME Integer)"
         val _success = db?.execSQL(CREATE_TABLE)
@@ -60,6 +61,7 @@ class DatabaseHandler(context: Context, tableName: String) :
         val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
         val _success = db?.execSQL(DROP_TABLE)
         Log.v("Clear DB", _success.toString())
+        setUser()
     }
 
     fun loadMessagesIntoAdapter(adapter: MessageAdapter){
@@ -107,6 +109,54 @@ class DatabaseHandler(context: Context, tableName: String) :
         }
         cursor.close()
         db.close()
+    }
+
+    fun saveSettings(){
+        val db = this.writableDatabase
+        val DROP_TABLE = "DROP TABLE IF EXISTS settings"
+        val _successDrop= db?.execSQL(DROP_TABLE)
+        Log.v("Drop settings", _successDrop.toString())
+
+        val CREATE_TABLE = "CREATE TABLE settings " +
+                "($ID Integer PRIMARY KEY, whiteTheme Integer, fontSize Integer)"
+
+        val _successCreate = db?.execSQL(CREATE_TABLE)
+        Log.v("Create settings", _successCreate.toString())
+
+        val values = ContentValues()
+        if(App.whiteTheme){
+            values.put("whiteTheme", 1)
+        }else{
+            values.put("whiteTheme", 0)
+        }
+        values.put("fontSize", App.fontSize)
+        val _success = db.insert("settings", null, values)
+        db.close()
+        Log.v("Settings_save", "$_success")
+    }
+
+    fun loadSettings(){
+        val db = this.writableDatabase
+        try{
+            val selectALLQuery = "SELECT * FROM settings"
+            val cursor = db.rawQuery(selectALLQuery, null)
+
+            if (cursor != null) {
+                if (cursor.moveToFirst()) {
+                    do {
+                        val whiteTheme = cursor.getString(cursor.getColumnIndex("whiteTheme")).toInt()
+                        val fontSize = cursor.getString(cursor.getColumnIndex("fontSize")).toInt()
+
+                        App.whiteTheme = whiteTheme == 1
+                        App.fontSize = fontSize
+                    } while (cursor.moveToNext())
+                }
+            }
+            cursor.close()
+            db.close()
+        }catch (e: Exception){
+            Log.e("Load_settings", e.toString())
+        }
     }
 
     companion object {

@@ -5,8 +5,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.POST
 import retrofit2.http.Body
-import retrofit2.http.FormUrlEncoded
-import java.util.*
 
 interface ChatService {
     @POST("/message")
@@ -25,10 +23,7 @@ interface ChatService {
     fun postLoadHistory(@Body body:LoadHistory): Call<History>
 
     companion object {
-        private const val BASE_URL = "http://94.75.7.195:8000/"
-//        private const val BASE_URL = "http://127.0.0.1:8080/"
-//        private const val BASE_URL = "http://10.0.2.2:8080/"
-//        private const val BASE_URL = "http://94.232.190.252:5650/"
+        private const val BASE_URL = "http://94.75.29.199:8000/"
 
         fun create(): ChatService {
             val retrofit = Retrofit.Builder()
