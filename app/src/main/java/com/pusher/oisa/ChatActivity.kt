@@ -23,8 +23,14 @@ import java.io.File
 private const val TAG = "ChatActivity"
 
 class ChatActivity: AppCompatActivity() {
+    private var isWhiteTheme = App.whiteTheme;
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if(App.whiteTheme){
+            setTheme(R.style.AppTheme_NoActionBar)
+        }else{
+            setTheme(R.style.AppBlack)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
@@ -36,11 +42,10 @@ class ChatActivity: AppCompatActivity() {
         actionBar.setDisplayShowHomeEnabled(true)
 
         messageList.layoutManager = LinearLayoutManager(this)
+
         App.adapter = MessageAdapter(this)
 
-        App.dbHandler = DatabaseHandler(this, App.user)
         App.dbHandler.setUser()
-
         App.dbHandler.loadMessagesIntoAdapter(App.adapter)
 
         btnSend.setOnClickListener {
@@ -54,17 +59,14 @@ class ChatActivity: AppCompatActivity() {
                 )
                 App.adapter.addMessage(message)
                 messageList.scrollToPosition(App.adapter.itemCount - 1);
-
                 App.dbHandler!!.addMessage(message)
-//                Toast.makeText(applicationContext,txtMessage.text.toString(), Toast.LENGTH_SHORT).show()
+
+                resetInput()
+
                 val call = ChatService.create().postMessage(message)
 
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
-                        resetInput()
-                        val msg = response.toString()
-                        val data = response
-
                         val answer = response.body()
                         if (response.isSuccessful) {
                             val other_message = Message(
@@ -121,7 +123,12 @@ class ChatActivity: AppCompatActivity() {
     }
 
     override fun onResume() {
+        if (isWhiteTheme != App.whiteTheme){
+            finish()
+            startActivity(Intent(this, ChatActivity::class.java))
+        }
         messageList.adapter = App.adapter
+        messageList.scrollToPosition(App.adapter.itemCount - 1);
         super.onResume()
     }
 

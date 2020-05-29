@@ -5,14 +5,24 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import kotlinx.android.synthetic.main.activity_chat.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.toolbar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
+    private var isWhiteTheme = App.whiteTheme;
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        App.dbHandler = DatabaseHandler(this)
+        App.dbHandler.loadSettings()
+        if(App.whiteTheme){
+            setTheme(R.style.AppTheme_NoActionBar)
+        }else{
+            setTheme(R.style.AppBlack)
+        }
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -20,20 +30,15 @@ class MainActivity : AppCompatActivity() {
 
         btnLogin.setOnClickListener {
             if (username.text.isNotEmpty() and password.text.isNotEmpty()) {
-//                val user = username.text.toString()
-//                val password = password.text.toString()
                 val login = Login(
                         username.text.toString(),
                         password.text.toString()
                 )
-//                startActivity(Intent(this@MainActivity, ChatActivity::class.java))
-//                Toast.makeText(applicationContext,txtMessage.text.toString(), Toast.LENGTH_SHORT).show()
+
                 val call = ChatService.create().postLogin(login)
 
                 call.enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
-//                        val msg = response.toString()
-//                        Log.e("Login", msg)
                         if(response.isSuccessful){
                             App.user = login.login
                             startActivity(Intent(this@MainActivity, ChatActivity::class.java))
@@ -68,15 +73,10 @@ class MainActivity : AppCompatActivity() {
                         password.text.toString()
                 )
 
-//                Toast.makeText(applicationContext,username.text.toString(), Toast.LENGTH_SHORT).show()
-                Log.e("Login", username.text.toString());
-                Log.e("Login", password.text.toString());
                 val call = ChatService.create().postCreateAccount(createAccount)
 
                 call.enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
-//                        val msg = response.toString()
-//                        Log.e("Login", msg)
                         if(response.isSuccessful){
                             Toast.makeText(applicationContext,"Аккаунт создан. Теперь вы можете войти", Toast.LENGTH_LONG).show()
                         } else {
@@ -102,5 +102,13 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext,"Введите данные пользователя", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onResume() {
+        if (isWhiteTheme != App.whiteTheme){
+            finish()
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+        super.onResume()
     }
 }
