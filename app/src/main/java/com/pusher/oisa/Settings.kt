@@ -4,6 +4,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.ActionMode
 import android.view.MenuItem
 import android.view.View
 import android.widget.AdapterView
@@ -37,6 +38,10 @@ class Settings : AppCompatActivity() {
 
         supportActionBar!!.setTitle(R.string.settings)
 
+        if(!App.whiteTheme){
+            switch1.toggle()
+        }
+
         switch1.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 // The switch is enabled/checked
@@ -61,7 +66,7 @@ class Settings : AppCompatActivity() {
         )
 
         // Set the drop down view resource
-        adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line)
+        adapter.setDropDownViewResource(R.layout.spinner_item)
 
         // Finally, data bind the spinner object with adapter
         spinner.adapter = adapter;
@@ -70,7 +75,12 @@ class Settings : AppCompatActivity() {
         spinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener{
             override fun onItemSelected(parent:AdapterView<*>, view: View, position: Int, id: Long){
                 // Display the selected item text on text view
-                App.fontSize = parent.getItemAtPosition(position).toString().toInt()
+
+                val item = parent.getItemAtPosition(position).toString().toInt()
+                if(item == App.fontSize){
+                    return
+                }
+                App.fontSize = item
                 Log.d("Set", App.fontSize.toString())
                 currentFontSizeText.text = App.fontSize.toString()
 
@@ -83,6 +93,9 @@ class Settings : AppCompatActivity() {
                 currentFontSizeText.text = App.fontSize.toString()
             }
         }
+
+        spinner.setSelection(sizes.indexOf(App.fontSize.toString()))
+
         Log.d("Init", App.fontSize.toString())
         currentFontSizeText.text = App.fontSize.toString()
 
@@ -118,7 +131,7 @@ class Settings : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<Void>, t: Throwable) {
-                    Log.e("Save_hitory", t.toString());
+                    Log.e("Save_history", t.toString());
                     Toast.makeText(applicationContext,"Ошибка доступа к серверу", Toast.LENGTH_SHORT).show()
                 }
             })
@@ -156,8 +169,6 @@ class Settings : AppCompatActivity() {
                     } else {
                         if (response.code() == 401){
                             Toast.makeText(applicationContext,"Не найдено сохранение", Toast.LENGTH_SHORT).show()
-                        } else if (response.code() == 404){
-                            Toast.makeText(applicationContext,"Неправильное имя или пароль", Toast.LENGTH_SHORT).show()
                         } else {
                             Log.e("Save_history", response.code().toString());
                             Toast.makeText(applicationContext,"Ошибка обработки запроса", Toast.LENGTH_SHORT).show()
@@ -175,7 +186,7 @@ class Settings : AppCompatActivity() {
         button_del.setOnClickListener {
             App.adapter.clear()
             App.dbHandler.clear()
-            Toast.makeText(applicationContext,"", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext,"Локальная история удалена", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -194,5 +205,10 @@ class Settings : AppCompatActivity() {
     override fun onBackPressed() {
         finish()
         super.onBackPressed()
+    }
+
+    override fun onStop() {
+        App.dbHandler.saveSettings()
+        super.onStop()
     }
 }

@@ -6,8 +6,10 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorLightGray</item>
         <item name="android:textColor">@color/colorBlack</item>
         <item name="background">@color/colorWhite</item>
+        <item name="android:itemBackground">@color/colorWhite</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -19,10 +21,13 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorButtonNormal">@color/colorPrimary</item>
         <item name="android:textColor">@color/colorWhite</item>
         <item name="background">@color/colorGray</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:button">@color/colorPrimary</item>
+        <item name="android:itemBackground">@color/colorGray</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
